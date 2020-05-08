@@ -1,3 +1,4 @@
+# Arian Boukani 9731012
 # deterministic finite automata class
 class DFA :
     # alphabet is the list of the legal inputs
@@ -9,7 +10,7 @@ class DFA :
         self.alphabet = alphabet
         self.states = states
         self.initial_state = initial_state
-        self.final_state = final_state
+        self.final_states = final_states
         self.vertices = vertices
         # i used nested dictionary structure to store the transition function with this format :
         # for example : {'q0' : {alpha0 : 'q1', alpha1 : 'q2', ...}, 'q1' : {alpha1 : 'q2', alpha2 : 'q3' ...}, ...}
@@ -27,5 +28,6 @@ class DFA :
         for i in string :
             if i not in self.alphabet : legal = False
             current_state = self.delta_func[current_state][i]
-        if current_state not in self.final_state : legal = False
+        if current_state not in self.final_states : legal = False
         return 'The given string can ' + ('not ' if not legal else '') + 'be accepted by this machine ;)'
+       
