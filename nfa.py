@@ -37,7 +37,7 @@ class NFA :
             if vertex[0] in res and vertex[1] not in self.alphabet :
                 res.add(vertex[2])
         return res  
-    # convert_to_dfa function produces the equivalent dfa machine of the given nfa machine using lambda_closure function
+    # convert_to_dfa function returns and produces the equivalent dfa machine of the given nfa machine using lambda_closure function
     # with the same alphabet and same initial state but with different final_states and transition function
     def convert_to_dfa(self) :
         dfa_state_size = 1
@@ -60,7 +60,7 @@ class NFA :
         for state in self.states :
             lamda_closure = self.lambda_closure(state)
             for s in lamda_closure :
-                if s in self.final_state :
+                if s in self.final_states :
                     final_states.append(state)  
         # and then we use lambda_closure function to produce the delta prime transition function of the nfa state
         # which helps us to produce the result dfa machine                     
@@ -78,4 +78,36 @@ class NFA :
                             res = res.union(self.lambda_closure(i))
                     except :
                         pass    
-                delta_prime_func[state][alpha] = res       
+                delta_prime_func[state][alpha] = res
+        # computing the new machine's delta transition function until there is no new state        
+        for dfa_state in dfa_states :
+            for alpha in self.alphabet :
+                res = set()
+                for state in dfa_states_name[dfa_state] :
+                    res = res.union(delta_prime_func[state][alpha])
+                found = False
+                res = list(res)
+                next_state = ''
+                for name, state in dfa_states_name.items() :
+                    if sorted(state) == sorted(res) :
+                        found = True 
+                        next_state = name 
+                # if the result state is not in the dfa_states we will consider it as a new state                       
+                if not found :
+                    new_state_name = 'q' + str(dfa_state_size)
+                    dfa_states.append(new_state_name)
+                    dfa_states_name[new_state_name] = res
+                    dfa_delta_func[new_state_name] = dict()
+                    next_state = new_state_name
+                    dfa_state_size += 1   
+                dfa_delta_func[dfa_state][alpha] = next_state
+        # computing the final states based on the new names
+        for name, state in dfa_states_name.items() :
+            for s in state :
+                if s in final_states and name not in dfa_final_states:
+                    dfa_final_states.append(name) 
+        # producing the vertices in order to call the DFA class
+        for current_state in dfa_states_name :
+            for alphabet in self.alphabet :
+                dfa_vertices.append([current_state, alphabet, dfa_delta_func[current_state][alphabet]])
+        return dfa.DFA(self.alphabet, dfa_states, dfa_initial_state, dfa_final_states, dfa_vertices)    
