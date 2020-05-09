@@ -1,5 +1,6 @@
 # Arian Boukani 9731012
 # nondeterministic finite automata class
+import dfa
 class NFA :
     # alphabet is the list of the legal inputs
     # states is a list that contains the name of the possible states
@@ -35,4 +36,46 @@ class NFA :
         for vertex in self.vertices :
             if vertex[0] in res and vertex[1] not in self.alphabet :
                 res.add(vertex[2])
-        return res      
+        return res  
+    # convert_to_dfa function produces the equivalent dfa machine of the given nfa machine using lambda_closure function
+    # with the same alphabet and same initial state but with different final_states and transition function
+    def convert_to_dfa(self) :
+        dfa_state_size = 1
+        final_states = []
+        dfa_final_states = []
+        dfa_initial_state = 'q0'
+        delta_prime_func = dict()
+        # dfa_states just stores the name of the states. for example : ['q0', 'q1', ...]
+        dfa_states = [dfa_initial_state]
+        # since in the new dfa machine the states might be made up of several states of the nfa machine, and it might be a little bit
+        # hard to store the new states as a list, i used dictionary to store the states in this format
+        # for example : {'q0' : ['Q1', 'Q2'], 'q1' : ['Q0'], ...}
+        # in this example q's are dfa's states and the Q's are nfa's state, but the list of the nfa states is the equivalent 
+        dfa_states_name = dict()
+        dfa_delta_func = dict()
+        dfa_vertices = []
+        dfa_states_name[dfa_initial_state] = [self.initial_state]
+        dfa_delta_func[dfa_initial_state] = dict()
+        # first of all i find the new machine's final states which depend's on the nfa's final states
+        for state in self.states :
+            lamda_closure = self.lambda_closure(state)
+            for s in lamda_closure :
+                if s in self.final_state :
+                    final_states.append(state)  
+        # and then we use lambda_closure function to produce the delta prime transition function of the nfa state
+        # which helps us to produce the result dfa machine                     
+        for state in self.states :
+            lambda_closure = self.lambda_closure(state)
+            delta_prime_func[state] = dict()
+            for alpha in self.alphabet :
+                res = set()
+                for s in lambda_closure :
+                    # since in nfa machine we might have no transition for a state for the given input
+                    # i used try in order not to result in exception
+                    try :
+                        tmp = self.delta_func[s][alpha]
+                        for i in tmp :
+                            res = res.union(self.lambda_closure(i))
+                    except :
+                        pass    
+                delta_prime_func[state][alpha] = res       
