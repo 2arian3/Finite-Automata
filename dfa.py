@@ -29,5 +29,4 @@ class DFA :
             if i not in self.alphabet : legal = False
             current_state = self.delta_func[current_state][i]
         if current_state not in self.final_states : legal = False
-        return 'The given string can ' + ('not ' if not legal else '') + 'be accepted by this machine ;)'
-       
+        return  str(string) + ' can ' + ('not ' if not legal else '') + 'be accepted by this machine ;)'
