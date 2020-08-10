@@ -5,14 +5,14 @@ class NFA :
     # alphabet is the list of the legal inputs
     # states is a list that contains the name of the possible states
     # final_states is a list because we might have a machine with more than one final state
-    # vertices is the list of vertices that each component is a list with three components
+    # moves is the list of moves that each component is a list with three components
     # the first one is the name of the starting state, the second component is the given input and the last one is the result state
-    def __init__(self, alphabet, states, initial_state, final_states, vertices) :
+    def __init__(self, alphabet, states, initial_state, final_states, moves) :
         self.alphabet = alphabet
         self.states = states
         self.initial_state = initial_state
         self.final_states = final_states
-        self.vertices = vertices
+        self.moves = moves
         if states[0] != initial_state :
             index = states.index(initial_state)
             self.states[0], self.states[index] = self.states[index], self.states[0]
@@ -23,19 +23,19 @@ class NFA :
         delta_func = dict()
         for state in states :
             delta_func[state] = dict()
-        for vertex in vertices :
-            if vertex[1] not in delta_func[vertex[0]] :
-                if vertex[1] not in self.alphabet : vertex[1] = 'lambda'
-                delta_func[vertex[0]][vertex[1]] = [vertex[2]]
-            else : delta_func[vertex[0]][vertex[1]].append(vertex[2])   
+        for move in moves :
+            if move[1] not in delta_func[move[0]] :
+                if move[1] not in self.alphabet : move[1] = 'lambda'
+                delta_func[move[0]][move[1]] = [move[2]]
+            else : delta_func[move[0]][move[1]].append(move[2])   
         self.delta_func = delta_func
     # finding the lambda closure of the given state in the machine
     # result is a set of the states      
     def lambda_closure(self, state) :
         res = {state}
-        for vertex in self.vertices :
-            if vertex[0] in res and vertex[1] not in self.alphabet :
-                res.add(vertex[2])
+        for move in self.moves :
+            if move[0] in res and move[1] not in self.alphabet :
+                res.add(move[2])
         return res  
     # convert_to_dfa function returns and produces the equivalent dfa machine of the given nfa machine using lambda_closure function
     # with the same alphabet and same initial state but with different final_states and transition function
@@ -53,7 +53,7 @@ class NFA :
         # in this example q's are dfa's states and the Q's are nfa's state, but the list of the nfa states is the equivalent 
         dfa_states_name = dict()
         dfa_delta_func = dict()
-        dfa_vertices = []
+        dfa_moves = []
         dfa_states_name[dfa_initial_state] = [self.initial_state]
         dfa_delta_func[dfa_initial_state] = dict()
         # first of all i find the new machine's final states which depend's on the nfa's final states
@@ -109,5 +109,5 @@ class NFA :
         # producing the vertices in order to call the DFA class
         for current_state in dfa_states_name :
             for alphabet in self.alphabet :
-                dfa_vertices.append([current_state, alphabet, dfa_delta_func[current_state][alphabet]])
-        return dfa.DFA(self.alphabet, dfa_states, dfa_initial_state, dfa_final_states, dfa_vertices)    
+                dfa_moves.append([current_state, alphabet, dfa_delta_func[current_state][alphabet]])
+        return dfa.DFA(self.alphabet, dfa_states, dfa_initial_state, dfa_final_states, dfa_moves)    
