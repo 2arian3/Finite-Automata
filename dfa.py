@@ -4,21 +4,21 @@ class DFA :
     # alphabet is the list of the legal inputs
     # states is a list that contains the name of the possible states
     # final_states is a list because we might have a machine with more than one final state
-    # vertices is the list of vertices that each component is a list with three components
+    # moves is the list of moves that each component is a list with three components
     # the first one is the name of the starting state, the second component is the given input and the last one is the result state
-    def __init__(self, alphabet, states, initial_state, final_states, vertices) :
+    def __init__(self, alphabet, states, initial_state, final_states, moves) :
         self.alphabet = alphabet
         self.states = states
         self.initial_state = initial_state
         self.final_states = final_states
-        self.vertices = vertices
+        self.moves = moves
         # i used nested dictionary structure to store the transition function with this format :
         # for example : {'q0' : {alpha0 : 'q1', alpha1 : 'q2', ...}, 'q1' : {alpha1 : 'q2', alpha2 : 'q3' ...}, ...}
         delta_func = dict()
         for state in states :
             delta_func[state] = dict()
-        for vertex in vertices :
-            delta_func[vertex[0]][vertex[1]] = vertex[2]
+        for move in moves :
+            delta_func[move[0]][move[1]] = move[2]
         self.delta_func = delta_func
     # check_string function checks if the given string could be accepted by the mentioned machine or not
     # and returns a string that demonstrates the result        
